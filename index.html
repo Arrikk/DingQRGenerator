@@ -221,7 +221,7 @@
           qrCodes.innerHTML = "";
           for (let i = 1; i <= 10; i++) {
             tableTemplate(id.value, i);
-          }
+          }     
         }
         // console.log(id.value);
       };
@@ -229,7 +229,7 @@
       function tableTemplate(business, index) {
         qrCodes.innerHTML += `<div class="col">
               <div class="card shadow-sm">
-                <img src="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=https://nellalink-ding.vercel.app/?business=${business}&spot=${index}&action=ding&choe=UTF-8" alt="" />
+                <img src="https://chart.googleapis.com/chart?chs=300x300&cht=qr&chl=https://nellalink-ding.vercel.app/?business=${business}&spot=${index}&choe=UTF-8" alt="" />
                 <div class="card-body">
                   <h3 class="card-text">
                     QR ${index}
@@ -237,6 +237,7 @@
                   <div
                     class="d-flex justify-content-between align-items-center"
                   >
+                  <code>https://nellalink-ding.vercel.app/?business=${business}&spot=${index}</code>
                   </div>
                 </div>
               </div>
