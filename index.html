@@ -133,12 +133,11 @@
                 placeholder="Business Id Here"
                 id="id"
               />
-              <a
-                href="javascript:;"
-                id="generate"
-                class="btn btn-secondary my-2"
-                >Generate</a
-              >
+              <button disabled id="generate" class="btn btn-secondary my-2">
+                Generate
+              </button>
+
+              <h1 class="fw-light d-none" id="businessName"></h1>
             </div>
           </div>
         </div>
@@ -179,21 +178,51 @@
 
     <script>
       let genBtn = document.getElementById("generate");
-      id = document.getElementById("id");
-      qrCodes = document.getElementById("qrCodes");
+      let id = document.getElementById("id");
+      let qrCodes = document.getElementById("qrCodes");
+      let businessName = document.getElementById("businessName");
+
+      id.oninput = (e) => {
+        let id = e.target.value;
+
+        if (id != "") {
+          genBtn.disabled = true;
+          console.log(id)
+
+          genBtn.innerHTML = `<div class="spinner-border spinner-border-sm" role="status"><span class="visually-hidden">Loading...</span></div>`;
+
+          fetch("https://ding.baremind.co.za/api/business/" + id)
+            .then((res) => res.json())
+            .then((data) => {
+                console.log(data.legal_business_name)
+              if (!data.id) {
+                  genBtn.disabled = true;
+                  errorMessage(`${id} is an invalid Business ID.`);
+            } else {
+                  genBtn.disabled = false;
+                  businessName.textContent = data.legal_business_name;
+                  businessName.style.setProperty('display', 'block', 'important');
+              }
+              genBtn.innerHTML = "Generate";
+            })
+            .catch((err) => {
+              errorMessage(`Error Occured`);
+              genBtn.disabled = true;
+              genBtn.innerHTML = "Generate";
+            });
+        }
+      };
 
       genBtn.onclick = (e) => {
         if (id.value == "") {
-            document.querySelector('div.error').innerHTML = `
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <strong>Business ID Error</strong> Please input your business ID to continue to generate QRCode.
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>`
-        }else{
-            qrCodes.innerHTML = "";
-            for (let i = 1; i <= 10; i++) {
-              tableTemplate(id.value, i);
-            }
+          errorMessage(
+            "Please input your business ID to continue to generate QRCode."
+          );
+        } else {
+          qrCodes.innerHTML = "";
+          for (let i = 1; i <= 10; i++) {
+            tableTemplate(id.value, i);
+          }
         }
         // console.log(id.value);
       };
@@ -213,6 +242,13 @@
                 </div>
               </div>
             </div> `;
+      }
+      function errorMessage(mssg) {
+        document.querySelector("div.error").innerHTML = `
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Business ID Error</strong> ${mssg}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>`;
       }
     </script>
   </body>
